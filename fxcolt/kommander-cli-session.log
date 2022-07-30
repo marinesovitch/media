@@ -1,0 +1,436 @@
+m:\github.lab\fxcolt\bin\Debug>kommander.exe
+$ reg_symbol@#%&@Biuro maklerskie mBanku@#%&@9876543210@#%&@EURUSD@#%&@
+onRegisterSymbol EURUSD
+h
+command (alias)
+---------------
+help (h)
+accounts (la)
+select (sel)
+close (c)
+close_all (ca)
+get (g)
+get_symbols (gs)
+hide_ticks (ht)
+list_symbols (ls)
+modify (m)
+open (o)
+set_stop_loss (sl)
+show_ticks (st)
+set_take_profit (tp)
+exit
+$ la
+0 Biuro_maklerskie_mBanku 9876543210
+$ sel 0
+0 Biuro_maklerskie_mBanku 9876543210
+$ g
+$ KTrader::onCmdResult cmd sent successfully
+gs
+EURUSD
+$ st
+$ onTick EURUSD 1.02265 1.02261 0 1658776477
+onTick EURUSD 1.02266 1.02262 0 1658776477
+onTick EURUSD 1.02265 1.02261 0 1658776477
+onTick EURUSD 1.02265 1.0226 0 1658776478
+onTick EURUSD 1.02264 1.02261 0 1658776478
+onTick EURUSD 1.02267 1.02262 0 1658776480
+onTick EURUSD 1.02265 1.02262 0 1658776480
+onTick EURUSD 1.02266 1.02261 0 1658776481
+onTick EURUSD 1.02265 1.02261 0 1658776481
+onTick EURUSD 1.02266 1.02261 0 1658776481
+onTick EURUSD 1.02266 1.02262 0 1658776482
+onTick EURUSD 1.02265 1.0226 0 1658776482
+onTick EURUSD 1.02264 1.0226 0 1658776482
+onTick EURUSD 1.02266 1.02262 0 1658776483
+honTick EURUSD 1.02266 1.02263 0 1658776483
+tonTick EURUSD 1.02266 1.02262 0 1658776483
+
+$ gs
+EURUSD
+$ ls
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onSymbol USDCHF
+KTrader::onSymbol GBPUSD
+KTrader::onSymbol EURUSD
+KTrader::onSymbol USDJPY
+KTrader::onSymbol USDCAD
+KTrader::onSymbol AUDUSD
+KTrader::onSymbol EURGBP
+KTrader::onSymbol EURAUD
+KTrader::onSymbol EURCHF
+KTrader::onSymbol GBPCHF
+KTrader::onSymbol CADJPY
+KTrader::onSymbol GBPJPY
+KTrader::onSymbol AUDNZD
+KTrader::onSymbol AUDCAD
+KTrader::onSymbol AUDCHF
+KTrader::onSymbol AUDJPY
+KTrader::onSymbol CHFJPY
+KTrader::onSymbol EURNZD
+KTrader::onSymbol EURCAD
+KTrader::onSymbol CADCHF
+KTrader::onSymbol NZDJPY
+KTrader::onSymbol NZDUSD
+KTrader::onSymbol EU50.f
+KTrader::onSymbol DE30.f
+KTrader::onSymbol POL20.f
+KTrader::onSymbol US500.f
+KTrader::onSymbol CHFPLN
+KTrader::onSymbol USDPLN
+KTrader::onSymbol GBPPLN
+KTrader::onSymbol WTI.f
+KTrader::onSymbol GOLD.f
+KTrader::onSymbol EURPLN
+KTrader::onSymbol EURJPY
+o EURGBP Buy 0.1 1.0227 0.98 1.05
+$ KTrader::onCmdResult cmd sent successfully
+o EURUSD Buy 0.1 1.0227 0.98 1.05
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02247 0.98 1.05 1658776653 0 0 -3.3 0 -1.85
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02248 0.98 1.05 1658776653 0 0 -3.3 0 -1.38
+o EURUSD Buy 0.2 1.03 0.98
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02247 0.98 0 1658776716 0 0 -6.61 0 -3.69
+o EURUSD Sell 0.2 1.02 1.06 0.97
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02248 1.06 0.97 1658776746 0 0 -6.61 0 -2.77
+get
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02244 0.98 1.05 1658776653 0 0 -3.3 0 -3.23
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02244 0.98 0 1658776716 0 0 -6.61 0 -6.46
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02249 1.06 0.97 1658776746 0 0 -6.61 0 -3.69
+o EURUSD s 0.1 1.01 1.071 0.954
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02239 1.071 0.954 1658776894 0 0 -3.3 0 -2.31
+set_stop_loss 13860811 1.087
+incorrect ticket: '1.087': contains incorrect characters
+$ set_stop_loss 1.087 13860811
+$ KTrader::onCmdResult cmd sent successfully
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02232 0.98 1.05 1658776653 0 0 -3.3 0 -8.77
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02232 0.98 0 1658776716 0 0 -6.61 0 -17.54
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02235 1.06 0.97 1658776746 0 0 -6.61 0 9.23
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02235 1.087 0.954 1658776894 0 0 -3.3 0 -0.47
+sl 0.9583 13860803
+$ KTrader::onCmdResult cmd sent successfully
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02238 0.9583 1.05 1658776653 0 0 -3.3 0 -6
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02238 0.98 0 1658776716 0 0 -6.61 0 -12
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02242 1.06 0.97 1658776746 0 0 -6.61 0 2.77
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02242 1.087 0.954 1658776894 0 0 -3.3 0 -3.69
+open EURUSD BuyLimit 0.1 1.03 1.0123 1.0545
+$ KTrader::onCmdResult cmd sent successfully
+open EURUSD BuyLimit 0.1 1.01 1.0123 1.0545
+$ KTrader::onCmdResult cmd sent successfully
+open EURUSD BuyLimit 0.1 1.01 0.94 1.0545
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860817 Pending BuyLimit 0.1 1.01 1.02236 0.94 1.0545 1658777289 0 0 0 0 0
+open EURUSD bl 0.1 1.001
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860819 Pending BuyLimit 0.1 1.001 1.02235 0 0 1658777335 0 0 0 0 0
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02235 0.9583 1.05 1658776653 0 0 -3.3 0 -7.39
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02235 0.98 0 1658776716 0 0 -6.61 0 -14.77
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.0224 1.06 0.97 1658776746 0 0 -6.61 0 4.62
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.0224 1.087 0.954 1658776894 0 0 -3.3 0 -2.77
+KTrader::onOrder EURUSD 13860817 Pending BuyLimit 0.1 1.01 1.0224 0.94 1.0545 1658777289 0 0 0 0 0
+KTrader::onOrder EURUSD 13860819 Pending BuyLimit 0.1 1.001 1.0224 0 0 1658777335 0 0 0 0 0
+open EURUSD SellLimit 0.1 1.03 1.0234 0.99
+$ KTrader::onCmdResult cmd sent successfully
+open EURUSD SellLimit 0.1 1.03 1.0534 0.99
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.02255 1.0534 0.99 1658777422 0 0 0 0 0
+open EURUSD sl 0.1 1.0278 1.0334 0.9871
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.02232 1.0334 0.9871 1658777466 0 0 0 0 0
+open EURUSD BuyStop 0.1 1.03
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860828 Pending BuyStop 0.1 1.03 1.02206 0 0 1658777572 0 0 0 0 0
+open EURUSD bs 0.1 1.03210 1.253 1.0428
+$ KTrader::onCmdResult cmd sent successfully
+open EURUSD bs 0.1 1.03210 1.0253 1.0428
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02205 1.0253 1.0428 1658777634 0 0 0 0 0
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02204 0.9583 1.05 1658776653 0 0 -3.3 0 -21.71
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02204 0.98 0 1658776716 0 0 -6.61 0 -43.4
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02209 1.06 0.97 1658776746 0 0 -6.61 0 33.25
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02209 1.087 0.954 1658776894 0 0 -3.3 0 11.55
+KTrader::onOrder EURUSD 13860817 Pending BuyLimit 0.1 1.01 1.02209 0.94 1.0545 1658777289 0 0 0 0 0
+KTrader::onOrder EURUSD 13860819 Pending BuyLimit 0.1 1.001 1.02209 0 0 1658777335 0 0 0 0 0
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.02204 1.0534 0.99 1658777422 0 0 0 0 0
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.02204 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Pending BuyStop 0.1 1.03 1.02209 0 0 1658777572 0 0 0 0 0
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02209 1.0253 1.0428 1658777634 0 0 0 0 0
+open EURUSD SellStop 0.1 0.9978 1.01534 0.9712
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860834 Pending SellStop 0.1 0.9978 1.02207 1.01534 0.9712 1658777736 0 0 0 0 0
+open EURUSD ss 0.1 1.0178 1.0256
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.02206 1.0256 0 1658777774 0 0 0 0 0
+o EURUSD ss 0.2 0.9878 1.0367 0.9891
+$ KTrader::onCmdResult cmd sent successfully
+o EURUSD ss 0.2 0.9878 1.0367 0.9791
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.02205 1.0367 0.9791 1658777843 0 0 0 0 0
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02205 0.9583 1.05 1658776653 0 0 -3.3 0 -21.25
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02205 0.98 0 1658776716 0 0 -6.61 0 -42.49
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.0221 1.06 0.97 1658776746 0 0 -6.61 0 32.33
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.0221 1.087 0.954 1658776894 0 0 -3.3 0 11.09
+KTrader::onOrder EURUSD 13860817 Pending BuyLimit 0.1 1.01 1.0221 0.94 1.0545 1658777289 0 0 0 0 0
+KTrader::onOrder EURUSD 13860819 Pending BuyLimit 0.1 1.001 1.0221 0 0 1658777335 0 0 0 0 0
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.02205 1.0534 0.99 1658777422 0 0 0 0 0
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.02205 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Pending BuyStop 0.1 1.03 1.0221 0 0 1658777572 0 0 0 0 0
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.0221 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860834 Pending SellStop 0.1 0.9978 1.02205 1.01534 0.9712 1658777736 0 0 0 0 0
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.02205 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.02205 1.0367 0.9791 1658777843 0 0 0 0 0
+st
+$ onTick EURUSD 1.02181 1.02175 0 1658777898
+onTick EURUSD 1.0218 1.02175 0 1658777899
+onTick EURUSD 1.02181 1.02175 0 1658777903
+onTick EURUSD 1.0218 1.02175 0 1658777904
+onTick EURUSD 1.02181 1.02176 0 1658777906
+onTick EURUSD 1.0218 1.02176 0 1658777906
+onTick EURUSD 1.0218 1.02174 0 1658777906
+ht
+$ g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.0217 0.9583 1.05 1658776653 0 0 -3.3 0 -37.42
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.0217 0.98 0 1658776716 0 0 -6.61 0 -74.85
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02173 1.06 0.97 1658776746 0 0 -6.61 0 66.55
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02173 1.087 0.954 1658776894 0 0 -3.3 0 28.18
+KTrader::onOrder EURUSD 13860817 Pending BuyLimit 0.1 1.01 1.02173 0.94 1.0545 1658777289 0 0 0 0 0
+KTrader::onOrder EURUSD 13860819 Pending BuyLimit 0.1 1.001 1.02173 0 0 1658777335 0 0 0 0 0
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.0217 1.0534 0.99 1658777422 0 0 0 0 0
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.0217 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Pending BuyStop 0.1 1.03 1.02173 0 0 1658777572 0 0 0 0 0
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02173 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860834 Pending SellStop 0.1 0.9978 1.0217 1.01534 0.9712 1658777736 0 0 0 0 0
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.0217 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.0217 1.0367 0.9791 1658777843 0 0 0 0 0
+open EURUSD bl 0.1 1.019
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860847 Pending BuyLimit 0.1 1.019 1.02183 0 0 1658778188 0 0 0 0 0
+o EURUSD BuyStop 0.1 1.02164
+$ KTrader::onCmdResult cmd sent successfully
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02163 0.9583 1.05 1658776653 0 0 -3.3 0 -40.66
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02163 0.98 0 1658776716 0 0 -6.61 0 -81.32
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02166 1.06 0.97 1658776746 0 0 -6.61 0 73.02
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02166 1.087 0.954 1658776894 0 0 -3.3 0 31.42
+KTrader::onOrder EURUSD 13860817 Pending BuyLimit 0.1 1.01 1.02166 0.94 1.0545 1658777289 0 0 0 0 0
+KTrader::onOrder EURUSD 13860819 Pending BuyLimit 0.1 1.001 1.02166 0 0 1658777335 0 0 0 0 0
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.02163 1.0534 0.99 1658777422 0 0 0 0 0
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.02163 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Pending BuyStop 0.1 1.03 1.02166 0 0 1658777572 0 0 0 0 0
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02166 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860834 Pending SellStop 0.1 0.9978 1.02163 1.01534 0.9712 1658777736 0 0 0 0 0
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.02163 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.02163 1.0367 0.9791 1658777843 0 0 0 0 0
+KTrader::onOrder EURUSD 13860847 Pending BuyLimit 0.1 1.019 1.02166 0 0 1658778188 0 0 0 0 0
+m 1.02179 0.99 1.05 0 13860817
+$ KTrader::onCmdResult cmd sent successfully
+m 1.0217 0.99 1.05 0 13860817
+$ KTrader::onCmdResult cmd sent successfully
+m 1.02174 0.97 1.06 0 13860819
+$ KTrader::onCmdResult cmd sent successfully
+m 1.02171 0.97 1.06 0 13860819
+$ KTrader::onCmdResult cmd sent successfully
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.0218 0.9583 1.05 1658776653 0 0 -3.3 0 -32.8
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.0218 0.98 0 1658776716 0 0 -6.61 0 -65.59
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02185 1.06 0.97 1658776746 0 0 -6.61 0 55.44
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02185 1.087 0.954 1658776894 0 0 -3.3 0 22.64
+KTrader::onOrder EURUSD 13860817 Pending BuyLimit 0.1 1.0217 1.02185 0.99 1.05 1658777289 0 0 0 0 0
+KTrader::onOrder EURUSD 13860819 Pending BuyLimit 0.1 1.02171 1.02185 0.97 1.06 1658777335 0 0 0 0 0
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.0218 1.0534 0.99 1658777422 0 0 0 0 0
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.0218 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Pending BuyStop 0.1 1.03 1.02185 0 0 1658777572 0 0 0 0 0
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02185 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860834 Pending SellStop 0.1 0.9978 1.0218 1.01534 0.9712 1658777736 0 0 0 0 0
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.0218 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.0218 1.0367 0.9791 1658777843 0 0 0 0 0
+KTrader::onOrder EURUSD 13860847 Pending BuyLimit 0.1 1.019 1.02185 0 0 1658778188 0 0 0 0 0
+g 13860817 13860819
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860817 Pending BuyLimit 0.1 1.0217 1.02184 0.99 1.05 1658777289 0 0 0 0 0
+KTrader::onOrder EURUSD 13860819 Pending BuyLimit 0.1 1.02171 1.02184 0.97 1.06 1658777335 0 0 0 0 0
+g 13860817 13860819
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860817 Open Buy 0.1 1.0217 1.02162 0.99 1.05 1658778643 0 0 -3.3 0 -3.69
+KTrader::onOrder EURUSD 13860819 Open Buy 0.1 1.02171 1.02162 0.97 1.06 1658778631 0 0 -3.3 0 -4.16
+m 1.02157 1.04 0.99 0 13860834
+$ KTrader::onCmdResult cmd sent successfully
+m 1.0214 1.04 0.99 0 13860834
+$ KTrader::onCmdResult cmd sent successfully
+g 13860834
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860834 Open Sell 0.1 1.02135 1.02141 1.04 0.99 1658778775 0 0 -3.3 0 -2.77
+m 1.02173 1.011 1.07 0 13860828
+$ KTrader::onCmdResult cmd sent successfully
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02166 0.9583 1.05 1658776653 0 0 -3.3 0 -39.27
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02166 0.98 0 1658776716 0 0 -6.61 0 -78.53
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.0217 1.06 0.97 1658776746 0 0 -6.61 0 69.31
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.0217 1.087 0.954 1658776894 0 0 -3.3 0 29.57
+KTrader::onOrder EURUSD 13860817 Open Buy 0.1 1.0217 1.02166 0.99 1.05 1658778643 0 0 -3.3 0 -1.85
+KTrader::onOrder EURUSD 13860819 Open Buy 0.1 1.02171 1.02166 0.97 1.06 1658778631 0 0 -3.3 0 -2.31
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.02166 1.0534 0.99 1658777422 0 0 0 0 0
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.02166 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Pending BuyStop 0.1 1.02173 1.0217 1.011 1.07 1658777572 0 0 0 0 0
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.0217 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860834 Open Sell 0.1 1.02135 1.0217 1.04 0.99 1658778775 0 0 -3.3 0 -16.18
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.02166 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.02166 1.0367 0.9791 1658777843 0 0 0 0 0
+KTrader::onOrder EURUSD 13860847 Pending BuyLimit 0.1 1.019 1.0217 0 0 1658778188 0 0 0 0 0
+g 13860828
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860828 Open Buy 0.1 1.02174 1.02171 1.011 1.07 1658778969 0 0 -3.3 0 -1.39
+set_take_profit 1.08 13860828
+$ KTrader::onCmdResult cmd sent successfully
+g 13860828
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860828 Open Buy 0.1 1.02174 1.02176 1.011 1.08 1658778969 0 0 -3.3 0 0.92
+get 13860803
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02191 0.9583 1.05 1658776653 0 0 -3.3 0 -27.71
+set_stop_loss 1.0123 13860803
+$ KTrader::onCmdResult cmd sent successfully
+get 13860803
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.0219 1.0123 1.05 1658776653 0 0 -3.3 0 -28.17
+g 13860806
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02196 0.98 0 1658776716 0 0 -6.61 0 -50.8
+sl 0.9512 13860806
+$ KTrader::onCmdResult cmd sent successfully
+g 13860806
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02194 0.9512 0 1658776716 0 0 -6.61 0 -52.65
+set_take_profit 1.03232 13860806
+$ KTrader::onCmdResult cmd sent successfully
+g 13860806
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02191 0.9512 1.03232 1658776716 0 0 -6.61 0 -55.42
+tp 1.04545 13860806
+$ KTrader::onCmdResult cmd sent successfully
+get 13860806
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02197 0.9512 1.04545 1658776716 0 0 -6.61 0 -49.87
+unreg_symbol@#%&@Biuro maklerskie mBanku@#%&@9876543210@#%&@EURUSD@#%&@
+onUnregisterSymbol EURUSD
+reg_symbol@#%&@Biuro maklerskie mBanku@#%&@9876543210@#%&@EURUSD@#%&@
+onRegisterSymbol EURUSD
+g
+$ exit
+
+m:\github.lab\fxcolt\bin\Debug>kommander.exe
+$ accounts
+0 Biuro_maklerskie_mBanku 9876543210
+$ sel 0
+0 Biuro_maklerskie_mBanku 9876543210
+$ g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02229 1.0123 1.05 1658776653 0 0 -3.3 0 -10.16
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02229 0.9512 1.04545 1658776716 0 0 -6.61 0 -20.31
+KTrader::onOrder EURUSD 13860807 Open Sell 0.2 1.02245 1.02234 1.06 0.97 1658776746 0 0 -6.61 0 10.16
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02234 1.087 0.954 1658776894 0 0 -3.3 0 0
+KTrader::onOrder EURUSD 13860817 Open Buy 0.1 1.0217 1.02229 0.99 1.05 1658778643 0 0 -3.3 0 27.24
+KTrader::onOrder EURUSD 13860819 Open Buy 0.1 1.02171 1.02229 0.97 1.06 1658778631 0 0 -3.3 0 26.78
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.02229 1.0534 0.99 1658777422 0 0 0 0 0
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.02229 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Open Buy 0.1 1.02174 1.02229 1.011 1.08 1658778969 0 0 -3.3 0 25.39
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02234 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860834 Open Sell 0.1 1.02135 1.02234 1.04 0.99 1658778775 0 0 -3.3 0 -45.72
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.02229 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.02229 1.0367 0.9791 1658777843 0 0 0 0 0
+KTrader::onOrder EURUSD 13860847 Pending BuyLimit 0.1 1.019 1.02234 0 0 1658778188 0 0 0 0 0
+c 13860807
+$ KTrader::onCmdResult cmd sent successfully
+g 13860807
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860807 Closed Sell 0.2 1.02245 1.02233 1.06 0.97 1658776746 0 1658785888 -6.61 0 11.09
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Open Buy 0.1 1.02251 1.02235 1.0123 1.05 1658776653 0 0 -3.3 0 -7.38
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02235 0.9512 1.04545 1658776716 0 0 -6.61 0 -14.78
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02239 1.087 0.954 1658776894 0 0 -3.3 0 -2.31
+KTrader::onOrder EURUSD 13860817 Open Buy 0.1 1.0217 1.02235 0.99 1.05 1658778643 0 0 -3.3 0 30.02
+KTrader::onOrder EURUSD 13860819 Open Buy 0.1 1.02171 1.02235 0.97 1.06 1658778631 0 0 -3.3 0 29.55
+KTrader::onOrder EURUSD 13860823 Pending SellLimit 0.1 1.03 1.02235 1.0534 0.99 1658777422 0 0 0 0 0
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.02235 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Open Buy 0.1 1.02174 1.02235 1.011 1.08 1658778969 0 0 -3.3 0 28.17
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02239 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860834 Open Sell 0.1 1.02135 1.02239 1.04 0.99 1658778775 0 0 -3.3 0 -48.03
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.02235 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.02235 1.0367 0.9791 1658777843 0 0 0 0 0
+KTrader::onOrder EURUSD 13860847 Pending BuyLimit 0.1 1.019 1.02239 0 0 1658778188 0 0 0 0 0
+close 13860803 13860823 13860834
+$ KTrader::onCmdResult cmd sent successfully
+get 13860803 13860823 13860834
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860803 Closed Buy 0.1 1.02251 1.02234 1.0123 1.05 1658776653 0 1658785965 -3.3 0 -7.85
+KTrader::onOrder EURUSD 13860823 Closed SellLimit 0.1 1.03 1.02234 1.0534 0.99 1658777422 0 1658785965 0 0 0
+KTrader::onOrder EURUSD 13860834 Closed Sell 0.1 1.02135 1.02239 1.04 0.99 1658778775 0 1658785965 -3.3 0 -48.03
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.0223 0.9512 1.04545 1658776716 0 0 -6.61 0 -19.4
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02234 1.087 0.954 1658776894 0 0 -3.3 0 0
+KTrader::onOrder EURUSD 13860817 Open Buy 0.1 1.0217 1.0223 0.99 1.05 1658778643 0 0 -3.3 0 27.7
+KTrader::onOrder EURUSD 13860819 Open Buy 0.1 1.02171 1.0223 0.97 1.06 1658778631 0 0 -3.3 0 27.24
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.0223 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Open Buy 0.1 1.02174 1.0223 1.011 1.08 1658778969 0 0 -3.3 0 25.86
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02234 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.0223 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.0223 1.0367 0.9791 1658777843 0 0 0 0 0
+KTrader::onOrder EURUSD 13860847 Pending BuyLimit 0.1 1.019 1.02234 0 0 1658778188 0 0 0 0 0
+close 13860847
+$ KTrader::onCmdResult cmd sent successfully
+g 13860847
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860847 Closed BuyLimit 0.1 1.019 1.02239 0 0 1658778188 0 1658786137 0 0 0
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.0224 0.9512 1.04545 1658776716 0 0 -6.61 0 -10.16
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02244 1.087 0.954 1658776894 0 0 -3.3 0 -4.62
+KTrader::onOrder EURUSD 13860817 Open Buy 0.1 1.0217 1.0224 0.99 1.05 1658778643 0 0 -3.3 0 32.32
+KTrader::onOrder EURUSD 13860819 Open Buy 0.1 1.02171 1.0224 0.97 1.06 1658778631 0 0 -3.3 0 31.86
+KTrader::onOrder EURUSD 13860824 Pending SellLimit 0.1 1.0278 1.0224 1.0334 0.9871 1658777466 0 0 0 0 0
+KTrader::onOrder EURUSD 13860828 Open Buy 0.1 1.02174 1.0224 1.011 1.08 1658778969 0 0 -3.3 0 30.47
+KTrader::onOrder EURUSD 13860830 Pending BuyStop 0.1 1.0321 1.02244 1.0253 1.0428 1658777634 0 0 0 0 0
+KTrader::onOrder EURUSD 13860835 Pending SellStop 0.1 1.0178 1.0224 1.0256 0 1658777774 0 0 0 0 0
+KTrader::onOrder EURUSD 13860837 Pending SellStop 0.2 0.9878 1.0224 1.0367 0.9791 1658777843 0 0 0 0 0
+close_all
+$ KTrader::onCmdResult cmd sent successfully
+get
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13860806 Open Buy 0.2 1.02251 1.02238 0.9512 1.04545 1658776716 0 0 -6.61 0 -12.01
+KTrader::onOrder EURUSD 13860811 Open Sell 0.1 1.02234 1.02242 1.087 0.954 1658776894 0 0 -3.3 0 -3.69
+KTrader::onOrder EURUSD 13860817 Open Buy 0.1 1.0217 1.02238 0.99 1.05 1658778643 0 0 -3.3 0 31.4
+KTrader::onOrder EURUSD 13860819 Open Buy 0.1 1.02171 1.02238 0.97 1.06 1658778631 0 0 -3.3 0 30.94
+KTrader::onOrder EURUSD 13860828 Open Buy 0.1 1.02174 1.02238 1.011 1.08 1658778969 0 0 -3.3 0 29.55
+ca
+$ KTrader::onCmdResult cmd sent successfully
+g
+$ KTrader::onCmdResult cmd sent successfully
+KTrader::onOrder EURUSD 13861069 Open Buy 0.1 1.02251 1.02231 0.9512 1.04545 1658776716 0 0 -3.3 0 -9.24
+ca
+$ KTrader::onCmdResult cmd sent successfully
+g
+$ KTrader::onCmdResult cmd sent successfully
+exit
+
+m:\github.lab\fxcolt\bin\Debug>
