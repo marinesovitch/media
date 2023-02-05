@@ -1,0 +1,1162 @@
+***************** SENSITIVE DATA OBFUSCATED INTENTIONALLY *****************
+
+marines@ubuntu-ds2:~$ cd ~/ote/test-suite
+marines@ubuntu-ds2:~/ote$ minikube version
+minikube version: v1.25.2
+commit: 362d5fdc0a3dbee389b3d3f1034e8023e72bd3a7
+marines@ubuntu-ds2:~/ote/test-suite$ kubectl version --short
+Flag --short has been deprecated, and will be removed in the future. The --short output will become the default.
+Client Version: v1.24.4
+Kustomize Version: v4.5.4
+Server Version: v1.23.8+k3s1
+marines@ubuntu-ds2:~/ote/test-suite$ cat default.cfg
+{
+	"testsuite": {
+		"e2eDirectory": "./e2e",
+		"dataDirectory": "../mysql-operator/tests/data",
+		"outputDirectory": "../out"
+	},
+	"k8s": {
+		"kubeConfig": "detect",
+		"environment": "detect",
+		"clusterName": "ote-mysql",
+		"deleteAtStart": true,
+		"deleteAtStop": false
+	},
+	"images": {
+		"engine": "detect",
+		"registry": "",
+		"repository": "mysql",
+		"pullPolicy": "IfNotPresent",
+		"defaultVersionTag": "8.0.31",
+		"defaultServerVersionTag": "8.0.31",
+		"minSupportedMysqlVersion": "8.0.27",
+		"mysqlServerImage":"mysql-server",
+		"mysqlRouterImage":"mysql-router",
+		"mysqlServerEEImage":"enterprise-server",
+		"mysqlRouterEEImage":"enterprise-router"
+	},
+	"minikube": {
+		"registryInsecure": true
+	},
+	"k3d": {
+		"registryConfig": "./template/k3d-registry-config.yaml"
+	},
+	"operator": {
+		"deploy": true,
+		"directory": "../mysql-operator/deploy",
+		"yamls": "deploy-crds.yaml:deploy-operator.yaml",
+		"image": "mysql-operator",
+		"imageEE":"enterprise-operator",
+		"versionTag": "8.0.31-2.0.7",
+		"pullPolicy": "IfNotPresent",
+		"template": "./template/deploy-operator.yaml",
+		"debugLevel": 1
+	},
+	"enterprise": {
+		"enable": false
+	},
+	"oci": {
+		"enable": false,
+		"configPath": "",
+		"bucketName": ""
+	}
+}
+marines@ubuntu-ds2:~/ote/test-suite$ cat custom.cfg
+{
+	"k8s": {
+		"clusterName": "ote-golang"
+	},
+	"images": {
+		"registry": "registry.localhost:5000"
+	},
+	"enterprise": {
+		"enable": true
+	},
+	"oci": {
+		"enable": true,
+		"configPath": "/home/marines/oci/config",
+		"bucketName": "dumps"
+	}
+}
+marines@ubuntu-ds2:~/ote/test-suite$ go build -v -gcflags='all=-N -l' -o ote
+github.com/marinesovitch/ote/test-suite/util/setup
+github.com/marinesovitch/ote/test-suite/util/k8s
+github.com/marinesovitch/ote/test-suite/util/executor
+github.com/marinesovitch/ote/test-suite
+marines@ubuntu-ds2:~/ote/test-suite$ ./ote start
+INFO 2023/02/04 21:08:37 minikube delete -p ote-golang
+INFO 2023/02/04 21:08:40 * Deleting "ote-golang" in docker ...
+* Deleting container "ote-golang" ...
+* Removing /home/marines/.minikube/machines/ote-golang ...
+* Removed all traces of the "ote-golang" cluster.
+INFO 2023/02/04 21:08:40 minikube start -p ote-golang --insecure-registry http://10.0.2.15:5000
+INFO 2023/02/04 21:09:09 * [ote-golang] minikube v1.25.2 on Ubuntu 20.04 (vbox/amd64)
+* Automatically selected the docker driver
+* Starting control plane node ote-golang in cluster ote-golang
+* Pulling base image ...
+* Creating docker container (CPUs=2, Memory=8000MB) ...
+* Preparing Kubernetes v1.23.3 on Docker 20.10.12 ...
+  - kubelet.housekeeping-interval=5m
+  - Generating certificates and keys ...
+  - Booting up control plane ...
+  - Configuring RBAC rules ...
+* Verifying Kubernetes components...
+  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
+* Enabled addons: default-storageclass, storage-provisioner
+* Done! kubectl is now configured to use "ote-golang" cluster and "default" namespace by default
+INFO 2023/02/04 21:09:09 kubectl kustomize --reorder=none /home/marines/ote/out/kustomization/test-suite > /home/marines/ote/out/ote-deployment.yaml
+INFO 2023/02/04 21:09:11 kubectl create -f /home/marines/ote/out/ote-deployment.yaml
+INFO 2023/02/04 21:09:13 customresourcedefinition.apiextensions.k8s.io/innodbclusters.mysql.oracle.com created
+customresourcedefinition.apiextensions.k8s.io/mysqlbackups.mysql.oracle.com created
+customresourcedefinition.apiextensions.k8s.io/clusterkopfpeerings.zalando.org created
+customresourcedefinition.apiextensions.k8s.io/kopfpeerings.zalando.org created
+clusterrole.rbac.authorization.k8s.io/mysql-operator created
+clusterrole.rbac.authorization.k8s.io/mysql-sidecar created
+clusterrolebinding.rbac.authorization.k8s.io/mysql-operator-rolebinding created
+clusterkopfpeering.zalando.org/mysql-operator created
+namespace/mysql-operator created
+serviceaccount/mysql-operator-sa created
+deployment.apps/mysql-operator created
+marines@ubuntu-ds2:~/ote/test-suite$ go test -p 1 -timeout 30m -v github.com/marinesovitch/ote/test-suite/e2e/...
+testing: warning: no tests to run
+PASS
+ok  	github.com/marinesovitch/ote/test-suite/e2e	(cached) [no tests to run]
+=== RUN   TestDumpInstance
+=== RUN   TestDumpInstance/Create=0
+INFO 2023/02/04 21:09:37 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n backup
+INFO 2023/02/04 21:09:38 secret/mypwds created
+INFO 2023/02/04 21:09:38 kubectl apply -f /home/marines/ote/out/dump-cluster.yaml -n backup
+INFO 2023/02/04 21:09:38 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:11:00 input | kubectl exec mycluster-0 -c mysql -n backup -i -- mysql -uroot -psakila
+mysql: [Warning] Using a password on the command line interface can be insecure.
+INFO 2023/02/04 21:11:09 kubectl apply -f /home/marines/ote/out/dump-volume.yaml -n backup
+INFO 2023/02/04 21:11:09 persistentvolume/test-backup-storage created
+persistentvolumeclaim/test-backup-storage created
+=== RUN   TestDumpInstance/BackupToVolume=1
+INFO 2023/02/04 21:11:09 kubectl apply -f /home/marines/ote/out/task-backup-to-volume.yaml -n backup
+INFO 2023/02/04 21:11:09 mysqlbackup.mysql.oracle.com/dump-test-volume1 created
+=== RUN   TestDumpInstance/BackupToOciBucket=1
+INFO 2023/02/04 21:11:23 kubectl create secret generic backup-apikey -n backup --from-literal=user=ocid1.user.oc1..aaaaaaaabbbbbbbbbbbbbbcccccccccccccccccccdddddddddddeeeeeeee --from-literal=fingerprint=00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff --from-literal=tenancy=ocid1.tenancy.oc1..aaaaaaaaabbbbbbbbbbccccccccccccccccccdddddddddddddddeeeeeeee --from-literal=region=us-ashburn-1 --from-literal=passphrase= --from-file=privatekey=/home/marines/oci/config/backup/key.pem
+INFO 2023/02/04 21:11:24 secret/backup-apikey created
+INFO 2023/02/04 21:11:24 kubectl apply -f /home/marines/ote/out/task-backup-to-volume.yaml -n backup
+INFO 2023/02/04 21:11:24 mysqlbackup.mysql.oracle.com/dump-test-oci1 created
+=== RUN   TestDumpInstance/Destroy=9
+INFO 2023/02/04 21:12:08 run oci --config-file /home/marines/oci/config --profile DELETE os object bulk-delete --force --bucket-name dumps --prefix /e2etest/ote-mysql/dump-test-oci1-20230204-201124
+INFO 2023/02/04 21:12:08 oci --config-file /home/marines/oci/config --profile DELETE os object bulk-delete --force --bucket-name dumps --prefix /e2etest/ote-mysql/dump-test-oci1-20230204-201124
+INFO 2023/02/04 21:12:13
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  "delete-failures": {},
+  "deleted-objects": [
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/@.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/excludeme@country@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/excludeme.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/excludeme@country.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/excludeme.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/@.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/@.post.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/excludeme@country@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/@.users.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/@.done.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/excludeme@country.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@async_cluster_members.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@async_cluster_members@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@async_cluster_members.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@async_cluster_views.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@async_cluster_views.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@async_cluster_members@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@async_cluster_views@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@async_cluster_views@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusters.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusters.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusters@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusterset_members.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusterset_members.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusterset_members@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusterset_views.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusterset_members@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusterset_views.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusterset_views@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusters@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clusterset_views@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clustersets.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clustersets.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@instances.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clustersets@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@clustersets@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@instances.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@instances@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@instances@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@router_rest_accounts.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@router_rest_accounts.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@router_rest_accounts@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@router_rest_accounts@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@routers@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@routers.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@routers.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@routers@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@schema_version.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@schema_version.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_ar_clusters.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_ar_clusters.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_ar_members.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_ar_members.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_cs_clustersets.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_clusters.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_cs_clustersets.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_cs_members.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_clusters.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_cs_members.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_cs_router_options.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_cs_router_options.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_gr_clusters.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_gr_clusters.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_instances.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_instances.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_router_rest_accounts.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_router_rest_accounts.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_routers.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_this_instance.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_this_instance.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/mysql_innodb_cluster_metadata@v2_routers.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@actor@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@actor.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@actor.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@actor@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@actor_info.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@address.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@actor_info.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@address@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@address.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@address@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@category.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@category.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@category@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@category@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@city.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@city@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@city.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@country.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@city@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@country@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@country.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@customer.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@country@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@customer.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@customer@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@customer@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@customer.triggers.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@customer_list.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@customer_list.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_actor.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_actor.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film.triggers.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_actor@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_actor@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_category.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_category.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_list.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_category@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_category@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_text.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_text.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_text@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_list.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@inventory.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@film_text@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@inventory.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@inventory@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@language.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@language.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@language@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@language@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@nicer_but_slower_film_list.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@payment.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@nicer_but_slower_film_list.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@inventory@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@payment.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@payment.triggers.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@payment@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@payment@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@rental.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@rental@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@rental@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@sales_by_film_category.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@sales_by_film_category.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@rental.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@staff.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@rental.triggers.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@sales_by_store.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@staff.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@staff@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@staff@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@staff_list.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@staff_list.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@store.json",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@store.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@sales_by_store.pre.sql",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@store@@0.tsv.zst",
+    "/e2etest/ote-mysql/dump-test-oci1-20230204-201124/sakila@store@@0.tsv.zst.idx"
+  ]
+}
+--- PASS: TestDumpInstance (167.82s)
+    --- PASS: TestDumpInstance/Create=0 (91.92s)
+    --- PASS: TestDumpInstance/BackupToVolume=1 (14.25s)
+    --- PASS: TestDumpInstance/BackupToOciBucket=1 (16.36s)
+    --- PASS: TestDumpInstance/Destroy=9 (33.04s)
+PASS
+ok  	github.com/marinesovitch/ote/test-suite/e2e/backup	167.844s
+=== RUN   TestClusterSpecAdmissionChecks
+=== RUN   TestClusterSpecAdmissionChecks/InvalidField=1
+INFO 2023/02/04 21:12:26 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/invalid-field.yaml -n badspec-admissions
+=== RUN   TestClusterSpecAdmissionChecks/NameTooLong=1
+INFO 2023/02/04 21:12:29 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/name-too-long.yaml -n badspec-admissions
+=== RUN   TestClusterSpecAdmissionChecks/LackOfName=1
+INFO 2023/02/04 21:12:31 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/lack-of-name.yaml -n badspec-admissions
+=== RUN   TestClusterSpecAdmissionChecks/LackOfSpec=1
+INFO 2023/02/04 21:12:33 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/lack-of-spec.yaml -n badspec-admissions
+=== RUN   TestClusterSpecAdmissionChecks/LackOfSecret=1
+INFO 2023/02/04 21:12:35 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/lack-of-spec.yaml -n badspec-admissions
+=== RUN   TestClusterSpecAdmissionChecks/WrongInstances=1
+INFO 2023/02/04 21:12:37 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/lack-of-spec.yaml -n badspec-admissions
+=== RUN   TestClusterSpecAdmissionChecks/WrongMycnf=1
+INFO 2023/02/04 21:12:39 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/lack-of-spec.yaml -n badspec-admissions
+--- PASS: TestClusterSpecAdmissionChecks (27.15s)
+    --- PASS: TestClusterSpecAdmissionChecks/InvalidField=1 (2.16s)
+    --- PASS: TestClusterSpecAdmissionChecks/NameTooLong=1 (2.18s)
+    --- PASS: TestClusterSpecAdmissionChecks/LackOfName=1 (2.17s)
+    --- PASS: TestClusterSpecAdmissionChecks/LackOfSpec=1 (2.14s)
+    --- PASS: TestClusterSpecAdmissionChecks/LackOfSecret=1 (2.14s)
+    --- PASS: TestClusterSpecAdmissionChecks/WrongInstances=1 (2.14s)
+    --- PASS: TestClusterSpecAdmissionChecks/WrongMycnf=1 (2.14s)
+=== RUN   TestClusterSpecRuntimeChecksCreation
+INFO 2023/02/04 21:12:54 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n badspec-creation
+INFO 2023/02/04 21:12:54 secret/mypwds created
+=== RUN   TestClusterSpecRuntimeChecksCreation/BadSecretDelete
+INFO 2023/02/04 21:12:54 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/bad-secret-delete.yaml -n badspec-creation
+INFO 2023/02/04 21:12:54 innodbcluster.mysql.oracle.com/mycluster created
+=== RUN   TestClusterSpecRuntimeChecksCreation/BadSecretRecover
+=== RUN   TestClusterSpecRuntimeChecksCreation/UnsupportedVersionDelete
+INFO 2023/02/04 21:13:03 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/unsupported-version-delete.yaml -n badspec-creation
+INFO 2023/02/04 21:13:03 innodbcluster.mysql.oracle.com/mycluster created
+=== RUN   TestClusterSpecRuntimeChecksCreation/UnsupportedVersionRecover
+INFO 2023/02/04 21:13:07 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/unsupported-version-recover.yaml -n badspec-creation
+INFO 2023/02/04 21:13:07 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:14:05 Waiting for routers of the cluster badspec-creation/mycluster to gone
+=== RUN   TestClusterSpecRuntimeChecksCreation/BadPodDelete
+INFO 2023/02/04 21:14:05 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/bad-pod-delete.yaml -n badspec-creation
+INFO 2023/02/04 21:14:05 innodbcluster.mysql.oracle.com/mycluster created
+=== RUN   TestClusterSpecRuntimeChecksCreation/BadPodRecover
+    runtime_checks_creation_test.go:316: TODO - may need a fix in operator
+--- PASS: TestClusterSpecRuntimeChecksCreation (92.45s)
+    --- PASS: TestClusterSpecRuntimeChecksCreation/BadSecretDelete (9.55s)
+    --- PASS: TestClusterSpecRuntimeChecksCreation/BadSecretRecover (0.00s)
+    --- PASS: TestClusterSpecRuntimeChecksCreation/UnsupportedVersionDelete (3.36s)
+    --- PASS: TestClusterSpecRuntimeChecksCreation/UnsupportedVersionRecover (58.70s)
+    --- PASS: TestClusterSpecRuntimeChecksCreation/BadPodDelete (8.24s)
+    --- SKIP: TestClusterSpecRuntimeChecksCreation/BadPodRecover (0.00s)
+=== RUN   TestClusterSpecRuntimeChecksModification
+=== RUN   TestClusterSpecRuntimeChecksModification/SetupBadUpgrade
+INFO 2023/02/04 21:14:26 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n badspec-modification
+INFO 2023/02/04 21:14:26 secret/mypwds created
+INFO 2023/02/04 21:14:26 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/badspec/yaml/cluster-to-modify.yaml -n badspec-modification
+INFO 2023/02/04 21:14:26 innodbcluster.mysql.oracle.com/mycluster created
+=== RUN   TestClusterSpecRuntimeChecksModification/BadUpgrade
+=== RUN   TestClusterSpecRuntimeChecksModification/TeardownBadUpgrade
+--- PASS: TestClusterSpecRuntimeChecksModification (145.68s)
+    --- PASS: TestClusterSpecRuntimeChecksModification/SetupBadUpgrade (79.93s)
+    --- PASS: TestClusterSpecRuntimeChecksModification/BadUpgrade (3.07s)
+    --- PASS: TestClusterSpecRuntimeChecksModification/TeardownBadUpgrade (49.85s)
+PASS
+ok  	github.com/marinesovitch/ote/test-suite/e2e/cluster/badspec	265.295s
+=== RUN   TestCluster1Defaults
+=== RUN   TestCluster1Defaults/CreateClusterOneInstance=0
+INFO 2023/02/04 21:16:53 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n cluster1-defaults
+INFO 2023/02/04 21:16:53 secret/mypwds created
+INFO 2023/02/04 21:16:53 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/config/yaml/cluster1-defaults.yaml -n cluster1-defaults
+INFO 2023/02/04 21:16:53 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:17:28 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/CheckAccounts1=1
+=== RUN   TestCluster1Defaults/GrowTwoInstances=2
+INFO 2023/02/04 21:18:04 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+INFO 2023/02/04 21:18:04 kubectl logs mycluster-1 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/AddRouters=2
+INFO 2023/02/04 21:18:11 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+INFO 2023/02/04 21:18:11 kubectl logs mycluster-1 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/GrowThreeInstances=2
+INFO 2023/02/04 21:18:47 Waiting for 3 routers of the cluster cluster1-defaults/mycluster to become running
+INFO 2023/02/04 21:18:47 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+INFO 2023/02/04 21:18:48 kubectl logs mycluster-1 -c sidecar -n cluster1-defaults
+INFO 2023/02/04 21:18:48 kubectl logs mycluster-2 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/ShrinkToOneInstance=2
+INFO 2023/02/04 21:19:14 Waiting for 3 routers of the cluster cluster1-defaults/mycluster to become running
+INFO 2023/02/04 21:19:15 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/RecoverCrash=3
+INFO 2023/02/04 21:19:15 kubectl exec mycluster-0 -c mysql -n cluster1-defaults -- /bin/sh -c kill -11 1
+INFO 2023/02/04 21:19:29 Waiting for 3 routers of the cluster cluster1-defaults/mycluster to become running
+INFO 2023/02/04 21:19:29 kubectl exec mycluster-0 -c mysql -n cluster1-defaults -- cat /var/lib/mysql/mysqld-auto.cnf
+INFO 2023/02/04 21:19:29 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/RecoverRestart=3
+INFO 2023/02/04 21:20:14 Waiting for 3 routers of the cluster cluster1-defaults/mycluster to become running
+INFO 2023/02/04 21:20:14 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/RecoverShutdown=3
+INFO 2023/02/04 21:21:08 Waiting for 3 routers of the cluster cluster1-defaults/mycluster to become running
+INFO 2023/02/04 21:21:09 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/RecoverDelete=3
+INFO 2023/02/04 21:22:11 kubectl logs mycluster-0 -c sidecar -n cluster1-defaults
+=== RUN   TestCluster1Defaults/AfterCluster1Defaults=9
+--- PASS: TestCluster1Defaults (355.85s)
+    --- PASS: TestCluster1Defaults/CreateClusterOneInstance=0 (35.08s)
+    --- PASS: TestCluster1Defaults/CheckAccounts1=1 (0.09s)
+    --- PASS: TestCluster1Defaults/GrowTwoInstances=2 (36.10s)
+    --- PASS: TestCluster1Defaults/AddRouters=2 (6.73s)
+    --- PASS: TestCluster1Defaults/GrowThreeInstances=2 (36.80s)
+    --- PASS: TestCluster1Defaults/ShrinkToOneInstance=2 (26.86s)
+    --- PASS: TestCluster1Defaults/RecoverCrash=3 (14.41s)
+    --- PASS: TestCluster1Defaults/RecoverRestart=3 (44.86s)
+    --- PASS: TestCluster1Defaults/RecoverShutdown=3 (54.94s)
+    --- PASS: TestCluster1Defaults/RecoverDelete=3 (62.25s)
+    --- PASS: TestCluster1Defaults/AfterCluster1Defaults=9 (25.07s)
+=== RUN   TestCluster3Defaults
+=== RUN   TestCluster3Defaults/CreateClusterThreeInstances=0
+INFO 2023/02/04 21:22:49 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n cluster3-defaults
+INFO 2023/02/04 21:22:49 secret/mypwds created
+INFO 2023/02/04 21:22:49 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/config/yaml/cluster3-defaults.yaml -n cluster3-defaults
+INFO 2023/02/04 21:22:49 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:24:27 Waiting for 2 routers of the cluster cluster3-defaults/mycluster to become running
+INFO 2023/02/04 21:24:30 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:24:30 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:24:31 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/CheckVersion3=1
+=== RUN   TestCluster3Defaults/CheckAccounts3=1
+=== RUN   TestCluster3Defaults/CheckRouting=2
+INFO 2023/02/04 21:24:31 kubectl apply -f /home/marines/ote/out/cluster3-routing.yaml -n appns
+INFO 2023/02/04 21:24:31 pod/testpod created
+=== RUN   TestCluster3Defaults/RecoverCrash1of3=3
+INFO 2023/02/04 21:24:33 kubectl exec mycluster-0 -c mysql -n cluster3-defaults -- /bin/sh -c kill -11 1
+INFO 2023/02/04 21:25:14 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:25:24 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:25:24 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/RecoverCrash2of3=3
+INFO 2023/02/04 21:25:24 kubectl exec mycluster-1 -c mysql -n cluster3-defaults -- /bin/sh -c kill -11 1
+INFO 2023/02/04 21:25:24 kubectl exec mycluster-0 -c mysql -n cluster3-defaults -- /bin/sh -c kill -11 1
+INFO 2023/02/04 21:27:05 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:27:05 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:27:06 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/RecoverCrash3of3=3
+INFO 2023/02/04 21:27:06 kubectl exec mycluster-2 -c mysql -n cluster3-defaults -- /bin/sh -c kill -11 1
+INFO 2023/02/04 21:27:06 kubectl exec mycluster-1 -c mysql -n cluster3-defaults -- /bin/sh -c kill -11 1
+INFO 2023/02/04 21:27:06 kubectl exec mycluster-0 -c mysql -n cluster3-defaults -- /bin/sh -c kill -11 1
+INFO 2023/02/04 21:27:49 Waiting for 2 routers of the cluster cluster3-defaults/mycluster to become running
+INFO 2023/02/04 21:27:49 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:27:49 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:27:50 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/RecoverDelete1of3=3
+INFO 2023/02/04 21:28:57 Waiting for 2 routers of the cluster cluster3-defaults/mycluster to become running
+INFO 2023/02/04 21:28:57 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:29:07 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:29:08 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:29:08 kubectl exec mycluster-0 -c sidecar -n cluster3-defaults -- mysqlsh root:sakila@localhost -- cluster set-primary-instance mycluster-0.mycluster-instances.cluster3-defaults.svc.cluster.local:3306
+INFO 2023/02/04 21:29:08 Cannot set LC_ALL to locale en_US.UTF-8: No such file or directory
+[33mWARNING: [0mUsing a password on the command line interface can be insecure.
+Setting instance 'mycluster-0.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' as the primary instance of cluster 'mycluster'...
+
+Instance 'mycluster-1.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' was switched from PRIMARY to SECONDARY.
+Instance 'mycluster-0.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' was switched from SECONDARY to PRIMARY.
+Instance 'mycluster-2.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' remains SECONDARY.
+
+The instance 'mycluster-0.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' was successfully elected as primary.
+INFO 2023/02/04 21:29:19 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:29:19 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:29:19 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/RecoverDelete2of3=3
+INFO 2023/02/04 21:30:33 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:30:33 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:30:44 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:30:44 kubectl exec mycluster-0 -c sidecar -n cluster3-defaults -- mysqlsh root:sakila@localhost -- cluster set-primary-instance mycluster-0.mycluster-instances.cluster3-defaults.svc.cluster.local:3306
+INFO 2023/02/04 21:30:45 Cannot set LC_ALL to locale en_US.UTF-8: No such file or directory
+[33mWARNING: [0mUsing a password on the command line interface can be insecure.
+Setting instance 'mycluster-0.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' as the primary instance of cluster 'mycluster'...
+
+Instance 'mycluster-1.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' remains SECONDARY.
+Instance 'mycluster-0.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' was switched from SECONDARY to PRIMARY.
+Instance 'mycluster-2.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' was switched from PRIMARY to SECONDARY.
+
+The instance 'mycluster-0.mycluster-instances.cluster3-defaults.svc.cluster.local:3306' was successfully elected as primary.
+=== RUN   TestCluster3Defaults/RecoverDeleteAndWipe1of3=3
+INFO 2023/02/04 21:31:48 Waiting for 2 routers of the cluster cluster3-defaults/mycluster to become running
+INFO 2023/02/04 21:31:59 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:31:59 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:31:59 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/RecoverRestart1of3=3
+INFO 2023/02/04 21:32:27 Waiting for 2 routers of the cluster cluster3-defaults/mycluster to become running
+INFO 2023/02/04 21:32:28 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:32:38 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:32:38 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/RecoverRestart2of3=3
+INFO 2023/02/04 21:33:31 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:33:42 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:33:42 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/RecoverRestart3of3=3
+INFO 2023/02/04 21:34:32 Waiting for 2 routers of the cluster cluster3-defaults/mycluster to become running
+INFO 2023/02/04 21:34:32 kubectl logs mycluster-0 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:34:32 kubectl logs mycluster-1 -c sidecar -n cluster3-defaults
+INFO 2023/02/04 21:34:33 kubectl logs mycluster-2 -c sidecar -n cluster3-defaults
+=== RUN   TestCluster3Defaults/AfterCluster3Defaults=9
+--- PASS: TestCluster3Defaults (746.69s)
+    --- PASS: TestCluster3Defaults/CreateClusterThreeInstances=0 (101.91s)
+    --- PASS: TestCluster3Defaults/CheckVersion3=1 (0.02s)
+    --- PASS: TestCluster3Defaults/CheckAccounts3=1 (0.38s)
+    --- PASS: TestCluster3Defaults/CheckRouting=2 (1.98s)
+    --- PASS: TestCluster3Defaults/RecoverCrash1of3=3 (51.08s)
+    --- PASS: TestCluster3Defaults/RecoverCrash2of3=3 (101.47s)
+    --- PASS: TestCluster3Defaults/RecoverCrash3of3=3 (43.98s)
+    --- PASS: TestCluster3Defaults/RecoverDelete1of3=3 (90.03s)
+    --- PASS: TestCluster3Defaults/RecoverDelete2of3=3 (84.95s)
+    --- PASS: TestCluster3Defaults/RecoverDeleteAndWipe1of3=3 (74.66s)
+    --- PASS: TestCluster3Defaults/RecoverRestart1of3=3 (38.79s)
+    --- PASS: TestCluster3Defaults/RecoverRestart2of3=3 (63.98s)
+    --- PASS: TestCluster3Defaults/RecoverRestart3of3=3 (50.70s)
+    --- PASS: TestCluster3Defaults/AfterCluster3Defaults=9 (29.70s)
+=== RUN   TestClusterRaces
+=== RUN   TestClusterRaces/CreateAndDelete=0
+INFO 2023/02/04 21:35:16 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n cluster-races
+INFO 2023/02/04 21:35:16 secret/mypwds created
+INFO 2023/02/04 21:35:16 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/config/yaml/cluster-races.yaml -n cluster-races
+INFO 2023/02/04 21:35:16 innodbcluster.mysql.oracle.com/mycluster created
+--- PASS: TestClusterRaces (80.31s)
+    --- PASS: TestClusterRaces/CreateAndDelete=0 (68.07s)
+=== RUN   TestClusterCustomConf
+=== RUN   TestClusterCustomConf/CreateCustomConf=0
+INFO 2023/02/04 21:36:36 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n custom-conf
+INFO 2023/02/04 21:36:36 secret/mypwds created
+INFO 2023/02/04 21:36:36 kubectl apply -f /home/marines/ote/out/custom-conf.yaml -n custom-conf
+INFO 2023/02/04 21:36:36 innodbcluster.mysql.oracle.com/myvalid-cluster-name-28-char created
+INFO 2023/02/04 21:37:22 Waiting for 1 routers of the cluster custom-conf/myvalid-cluster-name-28-char to become running
+INFO 2023/02/04 21:37:25 kubectl logs myvalid-cluster-name-28-char-0 -c sidecar -n custom-conf
+INFO 2023/02/04 21:37:26 kubectl logs myvalid-cluster-name-28-char-1 -c sidecar -n custom-conf
+=== RUN   TestClusterCustomConf/DestroyCustomConf=1
+--- PASS: TestClusterCustomConf (90.37s)
+    --- PASS: TestClusterCustomConf/CreateCustomConf=0 (50.08s)
+    --- PASS: TestClusterCustomConf/DestroyCustomConf=1 (27.65s)
+=== RUN   TestClusterCustomImageConf
+=== RUN   TestClusterCustomImageConf/CreateCustomImageConf=0
+INFO 2023/02/04 21:38:06 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n custom-image-conf
+INFO 2023/02/04 21:38:06 secret/mypwds created
+INFO 2023/02/04 21:38:06 kubectl apply -f /home/marines/ote/out/custom-image-conf.yaml -n custom-image-conf
+INFO 2023/02/04 21:38:07 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:38:41 Waiting for 1 routers of the cluster custom-image-conf/mycluster to become running
+INFO 2023/02/04 21:38:45 kubectl logs mycluster-0 -c sidecar -n custom-image-conf
+=== RUN   TestClusterCustomImageConf/DestroyCustomImageConf=1
+--- PASS: TestClusterCustomImageConf (74.97s)
+    --- PASS: TestClusterCustomImageConf/CreateCustomImageConf=0 (38.47s)
+    --- PASS: TestClusterCustomImageConf/DestroyCustomImageConf=1 (24.25s)
+=== RUN   TestTwoClustersOneNamespace
+=== RUN   TestTwoClustersOneNamespace/CreateClusterOne=0
+INFO 2023/02/04 21:39:21 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n two-clusters-one-ns
+INFO 2023/02/04 21:39:21 secret/mypwds created
+INFO 2023/02/04 21:39:21 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/config/yaml/cluster-one.yaml -n two-clusters-one-ns
+INFO 2023/02/04 21:39:21 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:39:56 Waiting for 1 routers of the cluster two-clusters-one-ns/mycluster to become running
+INFO 2023/02/04 21:39:59 kubectl logs mycluster-0 -c sidecar -n two-clusters-one-ns
+=== RUN   TestTwoClustersOneNamespace/CreateClusterTwo=0
+INFO 2023/02/04 21:39:59 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n two-clusters-one-ns
+INFO 2023/02/04 21:40:00 secret/mypwds2 created
+INFO 2023/02/04 21:40:00 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/config/yaml/cluster-two.yaml -n two-clusters-one-ns
+INFO 2023/02/04 21:40:00 innodbcluster.mysql.oracle.com/mycluster2 created
+INFO 2023/02/04 21:40:35 Waiting for 2 routers of the cluster two-clusters-one-ns/mycluster2 to become running
+INFO 2023/02/04 21:40:38 kubectl logs mycluster2-0 -c sidecar -n two-clusters-one-ns
+=== RUN   TestTwoClustersOneNamespace/DestroyClusterOne=1
+INFO 2023/02/04 21:41:03 kubectl logs mycluster2-0 -c sidecar -n two-clusters-one-ns
+=== RUN   TestTwoClustersOneNamespace/DestroyClusterTwo=1
+--- PASS: TestTwoClustersOneNamespace (139.81s)
+    --- PASS: TestTwoClustersOneNamespace/CreateClusterOne=0 (38.26s)
+    --- PASS: TestTwoClustersOneNamespace/CreateClusterTwo=0 (38.58s)
+    --- PASS: TestTwoClustersOneNamespace/DestroyClusterOne=1 (25.52s)
+    --- PASS: TestTwoClustersOneNamespace/DestroyClusterTwo=1 (24.81s)
+PASS
+ok  	github.com/marinesovitch/ote/test-suite/e2e/cluster/config	1488.024s
+=== RUN   TestClusterEnterprise
+=== RUN   TestClusterEnterprise/Create=0
+INFO 2023/02/04 21:41:42 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n cluster-enterprise
+INFO 2023/02/04 21:41:43 secret/mypwds created
+INFO 2023/02/04 21:41:43 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/enterprise/yaml/enterprise-cluster.yaml -n cluster-enterprise
+INFO 2023/02/04 21:41:43 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:43:12 Waiting for 2 routers of the cluster cluster-enterprise/mycluster to become running
+INFO 2023/02/04 21:43:18 kubectl logs mycluster-0 -c sidecar -n cluster-enterprise
+INFO 2023/02/04 21:43:18 kubectl logs mycluster-1 -c sidecar -n cluster-enterprise
+INFO 2023/02/04 21:43:18 kubectl logs mycluster-2 -c sidecar -n cluster-enterprise
+=== RUN   TestClusterEnterprise/CheckAccounts=1
+=== RUN   TestClusterEnterprise/CheckVersion=1
+=== RUN   TestClusterEnterprise/Destroy=9
+--- PASS: TestClusterEnterprise (157.99s)
+    --- PASS: TestClusterEnterprise/Create=0 (96.20s)
+    --- PASS: TestClusterEnterprise/CheckAccounts=1 (0.11s)
+    --- PASS: TestClusterEnterprise/CheckVersion=1 (0.07s)
+    --- PASS: TestClusterEnterprise/Destroy=9 (48.78s)
+PASS
+ok  	github.com/marinesovitch/ote/test-suite/e2e/cluster/enterprise	158.014s
+=== RUN   TestClusterFromClone
+=== RUN   TestClusterFromClone/BeforeFromClone=0
+INFO 2023/02/04 21:44:22 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n cluster-from-clone
+INFO 2023/02/04 21:44:22 secret/mypwds created
+INFO 2023/02/04 21:44:22 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/init_db/yaml/from-clone-cluster.yaml -n cluster-from-clone
+INFO 2023/02/04 21:44:22 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:45:55 input | kubectl exec mycluster-0 -c mysql -n cluster-from-clone -i -- mysql -uroot -psakila
+mysql: [Warning] Using a password on the command line interface can be insecure.
+=== RUN   TestClusterFromClone/CreateClone=1
+INFO 2023/02/04 21:46:00 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n clone
+INFO 2023/02/04 21:46:00 secret/pwds created
+INFO 2023/02/04 21:46:00 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n clone
+INFO 2023/02/04 21:46:00 secret/donorpwds created
+INFO 2023/02/04 21:46:00 kubectl apply -f /home/marines/ote/test-suite/e2e/cluster/init_db/yaml/create-clone.yaml -n clone
+INFO 2023/02/04 21:46:01 innodbcluster.mysql.oracle.com/copycluster created
+INFO 2023/02/04 21:46:36 Waiting for 1 routers of the cluster clone/copycluster to become running
+=== RUN   TestClusterFromClone/Grow=1
+=== RUN   TestClusterFromClone/AfterFromClone=9
+--- PASS: TestClusterFromClone (308.08s)
+    --- PASS: TestClusterFromClone/BeforeFromClone=0 (98.04s)
+    --- PASS: TestClusterFromClone/CreateClone=1 (38.83s)
+    --- PASS: TestClusterFromClone/Grow=1 (53.34s)
+    --- PASS: TestClusterFromClone/AfterFromClone=9 (90.22s)
+=== RUN   TestClusterFromDumpOCI
+=== RUN   TestClusterFromDumpOCI/BeforeFromDumpOCI=0
+INFO 2023/02/04 21:49:30 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n from-dump-oci
+INFO 2023/02/04 21:49:30 secret/mypwds created
+INFO 2023/02/04 21:49:30 kubectl create secret generic backup-apikey -n from-dump-oci --from-literal=user=ocid1.user.oc1..aaaaaaaabbbbbbbbbbbbbbcccccccccccccccccccdddddddddddeeeeeeee --from-literal=fingerprint=00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff --from-literal=tenancy=ocid1.tenancy.oc1..aaaaaaaaabbbbbbbbbbccccccccccccccccccdddddddddddddddeeeeeeee --from-literal=region=us-ashburn-1 --from-literal=passphrase= --from-file=privatekey=/home/marines/oci/config/backup/key.pem
+INFO 2023/02/04 21:49:30 secret/backup-apikey created
+INFO 2023/02/04 21:49:30 kubectl create secret generic restore-apikey -n from-dump-oci --from-literal=user=ocid1.user.oc1..aaaaaaaabbbbbbbbbbbbbbcccccccccccccccccccdddddddddddeeeeeeee --from-literal=fingerprint=00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff --from-literal=tenancy=ocid1.tenancy.oc1..aaaaaaaaabbbbbbbbbbccccccccccccccccccdddddddddddddddeeeeeeee --from-literal=region=us-ashburn-1 --from-literal=passphrase= --from-file=privatekey=/home/marines/oci/config/restore/key.pem
+INFO 2023/02/04 21:49:30 secret/restore-apikey created
+INFO 2023/02/04 21:49:30 kubectl apply -f /home/marines/ote/out/cluster-oci-dump.yaml -n from-dump-oci
+INFO 2023/02/04 21:49:30 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:50:05 input | kubectl exec mycluster-0 -c mysql -n from-dump-oci -i -- mysql -uroot -psakila
+mysql: [Warning] Using a password on the command line interface can be insecure.
+INFO 2023/02/04 21:50:08 kubectl apply -f /home/marines/ote/out/dump-into-bucket.yaml -n from-dump-oci
+INFO 2023/02/04 21:50:08 mysqlbackup.mysql.oracle.com/cluster-from-dump-test-oci1 created
+=== RUN   TestClusterFromDumpOCI/CreateFromDump=1
+INFO 2023/02/04 21:50:49 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n from-dump-oci
+INFO 2023/02/04 21:50:49 secret/newpwds created
+INFO 2023/02/04 21:50:49 kubectl apply -f /home/marines/ote/out/create-from-oci-dump.yaml -n from-dump-oci
+INFO 2023/02/04 21:50:49 innodbcluster.mysql.oracle.com/newcluster created
+INFO 2023/02/04 21:51:54 Waiting for 1 routers of the cluster from-dump-oci/newcluster to become running
+=== RUN   TestClusterFromDumpOCI/GrowClusterFromDump=2
+=== RUN   TestClusterFromDumpOCI/DestroyClusterFromDump=3
+=== RUN   TestClusterFromDumpOCI/CreateFromDumpOptions=4
+INFO 2023/02/04 21:53:04 kubectl apply -f /home/marines/ote/out/create-from-oci-options.yaml -n from-dump-oci
+INFO 2023/02/04 21:53:04 innodbcluster.mysql.oracle.com/newcluster created
+INFO 2023/02/04 21:54:09 Waiting for 1 routers of the cluster from-dump-oci/newcluster to become running
+=== RUN   TestClusterFromDumpOCI/AfterFromDumpOCI=9
+INFO 2023/02/04 21:54:37 run oci --config-file /home/marines/oci/config --profile DELETE os object bulk-delete --force --bucket-name dumps --prefix /e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008
+INFO 2023/02/04 21:54:37 oci --config-file /home/marines/oci/config --profile DELETE os object bulk-delete --force --bucket-name dumps --prefix /e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008
+INFO 2023/02/04 21:54:43
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  "delete-failures": {},
+  "deleted-objects": [
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/@.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@async_cluster_members@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@async_cluster_views.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/@.done.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/@.post.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@async_cluster_members@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/@.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@async_cluster_views.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/@.users.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@async_cluster_members.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@async_cluster_views@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusters@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusters@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusters.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@async_cluster_views@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusterset_members.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusterset_members@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusterset_members.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusters.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusterset_views.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusterset_views.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusterset_members@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusterset_views@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clusterset_views@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clustersets.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@async_cluster_members.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clustersets@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clustersets@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@clustersets.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@instances.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@instances@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@instances.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@router_rest_accounts.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@instances@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@router_rest_accounts.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@router_rest_accounts@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@routers.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@routers@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@routers.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@routers@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@schema_version.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@schema_version.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_ar_clusters.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@router_rest_accounts@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_ar_clusters.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_ar_members.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_ar_members.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_clusters.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_cs_clustersets.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_cs_members.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_cs_clustersets.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_cs_members.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_cs_router_options.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_clusters.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_cs_router_options.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_gr_clusters.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_gr_clusters.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_instances.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_instances.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_router_rest_accounts.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_router_rest_accounts.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_routers.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_routers.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_this_instance.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/mysql_innodb_cluster_metadata@v2_this_instance.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@actor.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@actor@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@actor.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@actor@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@actor_info.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@actor_info.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@address.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@address.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@address@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@category.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@address@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@category.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@category@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@category@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@city.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@city.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@city@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@city@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@country.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@country@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@customer.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@country.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@customer@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@customer.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@customer@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@customer_list.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@customer.triggers.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@country@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@customer_list.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film.triggers.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_actor.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_actor@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_category.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_category.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_actor.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_actor@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_category@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_list.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_category@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_list.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_text.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_text.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_text@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@film_text@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@inventory.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@inventory@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@language.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@language.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@language@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@nicer_but_slower_film_list.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@language@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@inventory.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@inventory@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@nicer_but_slower_film_list.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@payment.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@payment.triggers.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@payment.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@payment@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@rental.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@rental.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@payment@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@rental.triggers.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@rental@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@rental@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@sales_by_film_category.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@sales_by_film_category.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@sales_by_store.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@staff.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@sales_by_store.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@staff.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@staff@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@staff_list.pre.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@staff@@0.tsv.zst",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@staff_list.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@store.json",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@store.sql",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@store@@0.tsv.zst.idx",
+    "/e2etest/ote-mysql/cluster-from-dump-test-oci1-20230204-205008/sakila@store@@0.tsv.zst"
+  ]
+}
+--- PASS: TestClusterFromDumpOCI (325.71s)
+    --- PASS: TestClusterFromDumpOCI/BeforeFromDumpOCI=0 (79.03s)
+    --- PASS: TestClusterFromDumpOCI/CreateFromDump=1 (68.33s)
+    --- PASS: TestClusterFromDumpOCI/GrowClusterFromDump=2 (37.88s)
+    --- PASS: TestClusterFromDumpOCI/DestroyClusterFromDump=3 (28.99s)
+    --- PASS: TestClusterFromDumpOCI/CreateFromDumpOptions=4 (68.22s)
+    --- PASS: TestClusterFromDumpOCI/AfterFromDumpOCI=9 (30.60s)
+PASS
+ok  	github.com/marinesovitch/ote/test-suite/e2e/cluster/init_db	633.819s
+=== RUN   TestUpgradeToNext
+=== RUN   TestUpgradeToNext/BeforeUpgradeToNext
+INFO 2023/02/04 21:54:57 kubectl apply -f /home/marines/ote/out/user-secrets.yaml -n upgrade-to-next
+INFO 2023/02/04 21:54:57 secret/mypwds created
+INFO 2023/02/04 21:54:57 kubectl apply -f /home/marines/ote/out/upgrade-to-next.yaml -n upgrade-to-next
+INFO 2023/02/04 21:54:57 innodbcluster.mysql.oracle.com/mycluster created
+INFO 2023/02/04 21:56:31 Waiting for 2 routers of the cluster upgrade-to-next/mycluster to become running
+INFO 2023/02/04 21:56:34 kubectl logs mycluster-0 -c sidecar -n upgrade-to-next
+INFO 2023/02/04 21:56:34 kubectl logs mycluster-1 -c sidecar -n upgrade-to-next
+INFO 2023/02/04 21:56:34 kubectl logs mycluster-2 -c sidecar -n upgrade-to-next
+=== RUN   TestUpgradeToNext/UpgradeToNext
+INFO 2023/02/04 21:59:55 Waiting for 2 routers of the cluster upgrade-to-next/mycluster to become running
+INFO 2023/02/04 21:59:55 kubectl logs mycluster-0 -c sidecar -n upgrade-to-next
+INFO 2023/02/04 21:59:55 kubectl logs mycluster-1 -c sidecar -n upgrade-to-next
+INFO 2023/02/04 22:00:06 kubectl logs mycluster-2 -c sidecar -n upgrade-to-next
+=== RUN   TestUpgradeToNext/AfterUpgradeToNext
+--- PASS: TestUpgradeToNext (350.89s)
+    --- PASS: TestUpgradeToNext/BeforeUpgradeToNext (97.52s)
+    --- PASS: TestUpgradeToNext/UpgradeToNext (211.28s)
+    --- PASS: TestUpgradeToNext/AfterUpgradeToNext (29.04s)
+PASS
+ok  	github.com/marinesovitch/ote/test-suite/e2e/cluster/upgrade	350.917s
+marines@ubuntu-ds2:~/ote/test-suite$ ./ote stop
+INFO 2023/02/04 22:02:46 minikube stop -p ote-golang
+INFO 2023/02/04 22:02:57 * Stopping node "ote-golang"  ...
+* Powering off "ote-golang" via SSH ...
+* 1 node stopped.
+INFO 2023/02/04 22:02:57 minikube delete -p ote-golang
+INFO 2023/02/04 22:03:00 * Deleting "ote-golang" in docker ...
+* Deleting container "ote-golang" ...
+* Removing /home/marines/.minikube/machines/ote-golang ...
+* Removed all traces of the "ote-golang" cluster.
